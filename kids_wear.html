@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kids' Wear - PH💘 Mart</title>
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #ffcc00, #ff6699);
+            margin: 0;
+            padding: 0;
+            text-align: center;
+            color: white;
+        }
+        .navbar {
+            background: #ff4500;
+            padding: 15px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0px 4px 10px rgba(255, 69, 0, 0.3);
+            gap: 30px;
+        }
+        .navbar a {
+            color: white;
+            text-decoration: none;
+            font-size: 18px;
+            padding: 10px 20px;
+            transition: 0.3s;
+            border-radius: 5px;
+            font-weight: bold;
+        }
+        .navbar a:hover {
+            background: #e63c00;
+        }
+        .container {
+            max-width: 1000px;
+            margin: 40px auto;
+            padding: 25px;
+            background: #ffffff;
+            border-radius: 12px;
+            box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.15);
+        }
+        h1 {
+            color: #ff4500;
+            font-size: 30px;
+        }
+        #searchBar {
+            width: 80%;
+            padding: 12px;
+            font-size: 16px;
+            border: 2px solid #ff4500;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            outline: none;
+        }
+        .products {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 20px;
+        }
+        .product-card {
+            width: 200px;
+            background: #ffeb99;
+            padding: 15px;
+            border-radius: 12px;
+            box-shadow: 0px 4px 10px rgba(255, 165, 0, 0.3);
+            text-align: center;
+            transition: 0.3s;
+        }
+        .product-card:hover {
+            transform: scale(1.1);
+            box-shadow: 0px 8px 15px rgba(255, 102, 0, 0.4);
+        }
+        .product-card img {
+            width: 100%;
+            height: 180px;
+            object-fit: cover;
+            border-radius: 8px;
+            border: 3px solid #ff4500;
+        }
+        .product-card p {
+            font-size: 18px;
+            font-weight: bold;
+            color: #ff6600;
+            margin-top: 10px;
+        }
+        .add-to-cart {
+            background-color: #ff4500;
+            color: white;
+            border: none;
+            padding: 10px;
+            width: 100%;
+            cursor: pointer;
+            border-radius: 8px;
+            margin-top: 10px;
+            transition: 0.3s;
+        }
+        .add-to-cart:hover {
+            background-color: #e63c00;
+        }
+    </style>
+</head>
+<body>
+    <div class="navbar">
+        <a href="home.html">Home</a>
+        <a href="cart.html">Cart</a>
+        <a href="fashion.html">Fashion</a>
+    </div>
+
+    <div class="container">
+        <h1>Kids' Wear</h1>
+        <input type="text" id="searchBar" placeholder="Search for products..." onkeyup="searchProducts()">
+        <div id="products" class="products"></div>
+    </div>
+
+    <script>
+        const products = [
+            { name: 'Kids T-Shirt', price: 15, image: 'kids_tshirt.jpeg' },
+            { name: 'Kids Shorts', price: 18, image: 'kids_shorts.jpeg' },
+            { name: 'Kids Hoodie', price: 25, image: 'kids_hoodie.jpeg' }
+        ];
+
+        function loadProducts() {
+            const productList = document.getElementById('products');
+            productList.innerHTML = '';
+            products.forEach(product => {
+                const productDiv = document.createElement('div');
+                productDiv.classList.add('product-card');
+                productDiv.innerHTML = `
+                    <img src="${product.image}" alt="${product.name}">
+                    <p>${product.name} - Rs. ${product.price}</p>
+                    <button class="add-to-cart" onclick="addToCart('${product.name}', ${product.price}, '${product.image}')">Add to Cart</button>
+                `;
+                productList.appendChild(productDiv);
+            });
+        }
+
+        function addToCart(name, price, image) {
+            let cart = JSON.parse(localStorage.getItem('cart')) || [];
+            cart.push({ name, price, image });
+            localStorage.setItem('cart', JSON.stringify(cart));
+            alert(`${name} added to cart!`);
+        }
+
+        function searchProducts() {
+            const searchQuery = document.getElementById('searchBar').value.toLowerCase();
+            const productList = document.getElementById('products');
+            productList.innerHTML = '';
+
+            products.filter(product => product.name.toLowerCase().includes(searchQuery))
+                .forEach(product => {
+                    const productDiv = document.createElement('div');
+                    productDiv.classList.add('product-card');
+                    productDiv.innerHTML = `
+                        <img src="${product.image}" alt="${product.name}">
+                        <p>${product.name} - Rs. ${product.price}</p>
+                        <button class="add-to-cart" onclick="addToCart('${product.name}', ${product.price}, '${product.image}')">Add to Cart</button>
+                    `;
+                    productList.appendChild(productDiv);
+                });
+        }
+
+        window.onload = loadProducts;
+    </script>
+</body>
+</html>

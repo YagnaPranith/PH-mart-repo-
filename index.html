@@ -1,0 +1,212 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PH💘 Mart - Login</title>
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background: linear-gradient(135deg, #121212, #1e1e1e);
+            color: white;
+            font-family: Arial, sans-serif;
+            overflow: hidden;
+            position: relative;
+            transition: background 0.5s ease, color 0.5s ease;
+        }
+
+        /* Light Theme */
+        body.light-theme {
+            background: linear-gradient(135deg, #f0f0f0, #ffffff);
+            color: black;
+        }
+
+        /* Background Animation */
+        .background-design {
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 500px;
+            height: 500px;
+            opacity: 0.6;
+        }
+
+        .cart-animation {
+            width: 100%;
+            height: 100%;
+            background: url('shopping-animation.svg') no-repeat center;
+            background-size: contain;
+            animation: moveCart 5s infinite alternate ease-in-out;
+        }
+
+        @keyframes moveCart {
+            0% { transform: translateX(-20px); }
+            100% { transform: translateX(20px); }
+        }
+
+        /* Login Box */
+        .login-box {
+            background: #252525;
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0px 10px 30px rgba(0, 234, 255, 0.3);
+            text-align: center;
+            width: 320px;
+            position: relative;
+            z-index: 10;
+            transition: background 0.5s ease, box-shadow 0.5s ease;
+        }
+
+        /* Light Theme Login Box */
+        body.light-theme .login-box {
+            background: #ffffff;
+            box-shadow: 0px 10px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        /* Glowing Login Title */
+        .login-box h2 {
+            margin-bottom: 20px;
+            font-size: 22px;
+            color: #00eaff;
+            text-shadow: 0 0 10px #00eaff, 0 0 20px #00eaff, 0 0 40px #00eaff;
+            animation: glow 1.5s infinite alternate ease-in-out;
+        }
+
+        @keyframes glow {
+            0% {
+                text-shadow: 0 0 10px #00eaff, 0 0 20px #00eaff, 0 0 40px #00eaff;
+            }
+            100% {
+                text-shadow: 0 0 15px #00ffee, 0 0 25px #00ffee, 0 0 50px #00ffee;
+            }
+        }
+
+        /* Light Theme Title Glow */
+        body.light-theme .login-box h2 {
+            color: #0077ff;
+            text-shadow: 0 0 10px #0077ff, 0 0 20px #0077ff, 0 0 40px #0077ff;
+        }
+
+        /* Input Fields */
+        .login-box input {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #00eaff;
+            border-radius: 5px;
+            background: #333;
+            color: white;
+            outline: none;
+            transition: background 0.5s ease, border-color 0.5s ease, color 0.5s ease;
+        }
+
+        /* Light Theme Inputs */
+        body.light-theme .login-box input {
+            background: #f0f0f0;
+            border-color: #0077ff;
+            color: black;
+        }
+
+        /* Button Container to Center the Login Button */
+        .button-container {
+            display: flex;
+            justify-content: center;
+            margin-top: 10px;
+        }
+
+        /* Login Button */
+        .login-box button {
+            padding: 10px 20px;
+            background: #00eaff;
+            color: black;
+            font-weight: bold;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        /* Light Theme Button */
+        body.light-theme .login-box button {
+            background: #0077ff;
+            color: white;
+        }
+
+        /* Button Hover */
+        .login-box button:hover {
+            background: #00ffee;
+            box-shadow: 0px 0px 10px #00ffee;
+        }
+
+        /* Light Theme Button Hover */
+        body.light-theme .login-box button:hover {
+            background: #0055cc;
+            box-shadow: 0px 0px 10px #0055cc;
+        }
+
+        /* Theme Toggle Button */
+        .theme-toggle {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: #00eaff;
+            color: black;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: 0.3s;
+        }
+
+        /* Light Theme Toggle */
+        body.light-theme .theme-toggle {
+            background: #0077ff;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <div class="background-design">
+        <div class="cart-animation"></div>
+    </div>
+
+    <button class="theme-toggle" onclick="toggleTheme()">Toggle Theme</button>
+
+    <div class="login-box">
+        <h2>Login Here</h2>
+        <form id="loginForm">
+            <input type="text" id="username" placeholder="Username" required>
+            <input type="password" id="password" placeholder="Password" required>
+            <div class="button-container">
+                <button type="submit">Login</button>
+            </div>
+        </form>
+    </div>
+
+    <script>
+        function toggleTheme() {
+            document.body.classList.toggle('light-theme');
+        }
+
+        document.getElementById('loginForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+            const username = document.getElementById('username').value;
+            localStorage.setItem('loggedInUser', username);
+            window.location.href = 'home.html';  // Redirects to home.html instead of pay.html
+        });
+
+        // Clear localStorage if user comes back to login page
+        window.onload = function() {
+            localStorage.removeItem('loggedInUser');
+            localStorage.removeItem('cart');
+            localStorage.removeItem('userAddress');
+        };
+    </script>
+</body>
+</html>

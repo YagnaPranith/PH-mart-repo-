@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Women's Wear - PH💘 Mart</title>
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #ffebee, #f8bbd0);
+            margin: 0;
+            padding: 0;
+            text-align: center;
+            color: #333;
+        }
+        .navbar {
+            background: #a5645d;
+            background: #ff4081;
+            padding: 15px;
+            display: flex;
+            justify-content: center; /* Centering buttons */
+            align-items: center;
+            box-shadow: 0px 4px 10px rgba(255, 105, 180, 0.3);
+            gap: 30px; /* Adds spacing between buttons */
+        }
+        .navbar a {
+            color: white;
+            text-decoration: none;
+            font-size: 18px;
+            padding: 10px 20px;
+            transition: 0.3s;
+            border-radius: 5px;
+            font-weight: bold;
+        }
+        .navbar a:hover {
+            background: #d861c7;
+            
+        }
+        .container {
+            max-width: 1000px;
+            margin: 40px auto;
+            padding: 25px;
+            background: #ffffff;
+            border-radius: 12px;
+            box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.15);
+        }
+        h1 {
+            color: #ff4081;
+            font-size: 28px;
+            margin-bottom: 20px;
+        }
+        #searchBar {
+            width: 80%;
+            padding: 12px;
+            font-size: 16px;
+            border: 2px solid #ff4081;
+            border-radius: 5px;
+            background: white;
+            color: #d81b60;
+            text-align: center;
+            outline: none;
+            margin-bottom: 20px;
+        }
+        .products {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 20px;
+        }
+        .product-card {
+            width: 220px;
+            background: #ffe4e1;
+            padding: 15px;
+            border-radius: 10px;
+            box-shadow: 0px 4px 10px rgba(255, 105, 180, 0.2);
+            text-align: center;
+            transition: 0.3s;
+        }
+        .product-card:hover {
+            transform: scale(1.05);
+            box-shadow: 0px 8px 15px rgba(255, 105, 180, 0.3);
+        }
+        .product-card img {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            border-radius: 8px;
+            border: 2px solid #ff4081;
+        }
+        .product-card p {
+            font-size: 16px;
+            font-weight: bold;
+            color: #d81b60;
+            margin-top: 10px;
+        }
+        .add-to-cart {
+            background-color: #ff4081;
+            color: white;
+            border: none;
+            padding: 10px;
+            width: 100%;
+            cursor: pointer;
+            border-radius: 5px;
+            margin-top: 10px;
+            font-size: 14px;
+            transition: 0.3s;
+        }
+        .add-to-cart:hover {
+            background-color: #e0336d;
+        }
+    </style>
+</head>
+<body>
+    <div class="navbar">
+        <a href="home.html">Home</a>
+        <a href="cart.html">Cart</a>
+        <a href="fashion.html">Fashion</a>
+    </div>
+
+    <div class="container">
+        <h1>Women's Wear</h1>
+        <input type="text" id="searchBar" placeholder="Search for products..." onkeyup="searchProducts()">
+        <div id="products" class="products"></div>
+    </div>
+
+    <script>
+        const products = [
+            { name: 'Women Dress', price: 30, image: 'women_dress.jpeg' },
+            { name: 'Women Skirt', price: 25, image: 'women_skirt.jpeg' },
+            { name: 'Women Jacket', price: 45, image: 'women_jacket.jpeg' },
+            { name: 'Women Handbag', price: 35, image: 'women_handbag.jpeg' },
+            { name: 'Women Heels', price: 50, image: 'women_heels.jpeg' },
+            { name: 'Women Watch', price: 60, image: 'women_watch.jpeg' },
+            { name: 'Women Sunglasses', price: 30, image: 'women_sunglasses.jpeg' },
+            { name: 'Women Hoodie', price: 40, image: 'women_hoodie.jpeg' }
+        ];
+
+        function loadProducts() {
+            const productList = document.getElementById('products');
+            productList.innerHTML = '';
+            products.forEach(product => {
+                const productDiv = document.createElement('div');
+                productDiv.classList.add('product-card');
+                productDiv.innerHTML = `
+                    <img src="${product.image}" alt="${product.name}">
+                    <p>${product.name} - Rs. ${product.price}</p>
+                    <button class="add-to-cart" onclick="addToCart('${product.name}', ${product.price}, '${product.image}')">Add to Cart</button>
+                `;
+                productList.appendChild(productDiv);
+            });
+        }
+
+        function addToCart(name, price, image) {
+            let cart = JSON.parse(localStorage.getItem('cart')) || [];
+            cart.push({ name, price, image });
+            localStorage.setItem('cart', JSON.stringify(cart));
+            alert(`${name} added to cart!`);
+        }
+
+        function searchProducts() {
+            const searchQuery = document.getElementById('searchBar').value.toLowerCase();
+            const productList = document.getElementById('products');
+            productList.innerHTML = '';
+
+            products.filter(product => product.name.toLowerCase().includes(searchQuery))
+                .forEach(product => {
+                    const productDiv = document.createElement('div');
+                    productDiv.classList.add('product-card');
+                    productDiv.innerHTML = `
+                        <img src="${product.image}" alt="${product.name}">
+                        <p>${product.name} - Rs. ${product.price}</p>
+                        <button class="add-to-cart" onclick="addToCart('${product.name}', ${product.price}, '${product.image}')">Add to Cart</button>
+                    `;
+                    productList.appendChild(productDiv);
+                });
+        }
+
+        window.onload = loadProducts;
+    </script>
+</body>
+</html>

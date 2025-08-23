@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cart Simulation</title>
+    <style>
+        /* CSS remains the same, added logout button styles */
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background-color: #121212;
+            color: white;
+            margin: 0;
+            padding: 0;
+            position: relative;
+        }
+        .logout-btn {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            padding: 8px 15px;
+            background-color: #ff0000;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        .logout-btn:hover {
+            background-color: #cc0000;
+        }
+        .grid-container {
+            display: grid;
+            grid-template-columns: repeat(20, 30px);
+            grid-template-rows: repeat(20, 30px);
+            gap: 1px;
+            background-color: black;
+            padding: 10px;
+            width: max-content;
+            margin: 20px auto;
+        }
+        .cell {
+            width: 30px;
+            height: 30px;
+            background-color: #222;
+            position: relative;
+        }
+        .cart {
+            width: 30px;
+            height: 30px;
+            position: relative;
+        }
+        .cartPick {
+            width: 30px;
+            height: 30px;
+            position: relative;
+        }
+        .item {
+            width: 10px;
+            height: 10px;
+            background-color: blue;
+            border-radius: 50%;
+            position: absolute;
+            top: 10px;
+            left: 10px;
+        }
+        input {
+            width: 300px;
+            padding: 10px;
+            font-size: 16px;
+            text-align: center;
+            background: #1e1e1e;
+            color: white;
+            border: 1px solid #00ffff;
+            margin-bottom: 10px;
+        }
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            background: #00ffff;
+            border: none;
+            color: rgb(24, 4, 4);
+            border-radius: 5px;
+        }
+        .blue {
+            background-color: darkblue;
+        }
+    </style>
+</head>
+<body>
+    <button class="logout-btn" onclick="logout()">Logout</button>
+    <h2>Cart Simulation</h2>
+    <input type="text" id="searchBox" readonly>
+    <br>
+    <button onclick="startSimulation()">Bring</button>
+    <br>
+    <p id="status">Ready to collect items</p>
+    <div class="grid-container" id="grid"></div>
+    
+    <script>
+        const gridSize = 20;
+        let cartX = 0, cartY = 0;
+        const cartImage = "download.png";
+        const cartPickingImage = "imag.png";
+        const grid = document.getElementById("grid");
+        let cartElement;
+
+        // Item positions
+        const items = {
+            "Mens T-Shirt": { x: 2, y: 3 }, "Mens Jacket": { x: 5, y: 6 }, "Mens Jeans": { x: 8, y: 2 },
+            "Mens Formal Shirt": { x: 10, y: 4 }, "Mens Hoodie": { x: 12, y: 8 }, "Mens Sneakers": { x: 15, y: 5 },
+            "Women Dress": { x: 3, y: 7 }, "Women Skirt": { x: 6, y: 12 }, "Women Jacket": { x: 9, y: 10 },
+            "Women Handbag": { x: 11, y: 14 }, "Women Heels": { x: 13, y: 18 }, "Women Watch": { x: 16, y: 9 },
+            "Women Sunglasses": { x: 18, y: 3 }, "Women Hoodie": { x: 4, y: 15 },
+            "Kids T-Shirt": { x: 7, y: 16 }, "Kids Shorts": { x: 9, y: 18 }, "Kids Hoodie": { x: 11, y: 19 },
+            "Rice": { x: 3, y: 2 }, "Wheat Flour": { x: 6, y: 4 }, "Cooking Oil": { x: 8, y: 5 },
+            "Lentils": { x: 10, y: 6 }, "Salt": { x: 12, y: 7 }, "Sugar": { x: 14, y: 8 },
+            "Tea Powder": { x: 16, y: 10 }, "Spices Pack": { x: 18, y: 12 }, "Milk Powder": { x: 5, y: 14 },
+            "Dry Fruits": { x: 7, y: 13 }, "Instant Noodles": { x: 9, y: 11 }, "Cup Soup": { x: 11, y: 9 },
+            "Frozen Pizza": { x: 13, y: 7 }, "Microwave Popcorn": { x: 15, y: 6 }, "Frozen French Fries": { x: 17, y: 5 },
+            "Chocolate Bars": { x: 4, y: 9 }, "Protein Bars": { x: 6, y: 11 }, "Canned Beans": { x: 8, y: 13 },
+            "Instant Oatmeal": { x: 10, y: 15 }, "Frozen Dumplings": { x: 12, y: 17 },
+            "Notebook": { x: 14, y: 12 }, "Ball Pens (Pack of 5)": { x: 16, y: 14 }, "Highlighters (Set of 4)": { x: 18, y: 16 },
+            "Sticky Notes": { x: 5, y: 17 }, "Stapler": { x: 7, y: 18 }, "Geometry Box": { x: 9, y: 19 },
+            "White Board Markers (Set of 3)": { x: 11, y: 16 }, "Sketchbook": { x: 13, y: 14 }, "Scissors": { x: 15, y: 12 },
+            "Glue Stick": { x: 17, y: 10 }, "Non-Stick Pan": { x: 19, y: 8 }, "Pressure Cooker": { x: 2, y: 10 },
+            "Knife Set": { x: 4, y: 12 }, "Cutting Board": { x: 6, y: 14 }, "Mixing Bowls": { x: 8, y: 16 },
+            "Measuring Cups": { x: 10, y: 18 }, "Spatula Set": { x: 12, y: 19 }, "Toaster": { x: 14, y: 16 },
+            "Blender": { x: 16, y: 18 }, "Dish Rack": { x: 18, y: 20 },
+            "Milk (1L)": { x: 5, y: 2 }, "Cheese (200g)": { x: 7, y: 4 }, "Butter (500g)": { x: 9, y: 6 },
+            "Yogurt (1L)": { x: 11, y: 8 }, "Paneer (250g)": { x: 13, y: 10 }, "Ghee (500ml)": { x: 15, y: 12 },
+            "Whipping Cream (250ml)": { x: 17, y: 14 }, "Ice Cream (500ml)": { x: 19, y: 16 },
+            "Condensed Milk (400g)": { x: 6, y: 17 }, "Flavored Milk (200ml)": { x: 8, y: 19 },
+            "Apples": { x: 10, y: 2 }, "Bananas": { x: 12, y: 4 }, "Tomatoes": { x: 14, y: 6 },
+            "Carrots": { x: 16, y: 8 }, "Potatoes": { x: 18, y: 10 }, "Onions": { x: 2, y: 12 },
+            "Cabbage": { x: 4, y: 14 }, "Oranges": { x: 6, y: 16 }, "Spinach": { x: 8, y: 18 }, "Grapes": { x: 10, y: 20 }
+        };
+
+        // Create the grid
+        function createGrid() {
+            for (let y = 0; y < gridSize; y++) {
+                for (let x = 0; x < gridSize; x++) {
+                    const cell = document.createElement("div");
+                    cell.classList.add("cell");
+                    cell.id = `cell-${y}-${x}`;
+                    grid.appendChild(cell);
+                }
+            }
+            cartElement = document.createElement("img");
+            cartElement.src = cartImage;
+            cartElement.classList.add("cart");
+            document.getElementById("cell-0-0").appendChild(cartElement);
+            placeItems();
+        }
+
+        function placeItems() {
+            for (const item in items) {
+                const { x, y } = items[item];
+                const cell = document.getElementById(`cell-${y}-${x}`);
+                const itemElement = document.createElement("div");
+                itemElement.classList.add("item");
+                cell.appendChild(itemElement);
+                cell.classList.add("blue");
+            }
+        }
+
+        function loadOrderedItems() {
+            const orderedItemsDisplay = localStorage.getItem("orderedItemsDisplay");
+            const orderedItems = localStorage.getItem("orderedItems");
+            
+            if (orderedItemsDisplay) {
+                document.getElementById("searchBox").value = orderedItemsDisplay;
+            } else if (orderedItems) {
+                // Fallback if only the raw data is available
+                const formattedItems = orderedItems.split(", ").map(item => {
+                    const [name, qty] = item.split("*");
+                    return `${name} (Qty: ${qty})`;
+                }).join(", ");
+                document.getElementById("searchBox").value = formattedItems;
+            } else {
+                document.getElementById("searchBox").value = "No items ordered";
+            }
+        }
+
+        function logout() {
+            localStorage.removeItem("loggedInUser");
+            window.location.href = "index.html";
+        }
+
+        async function moveCartTo(targetX, targetY, itemName) {
+            // Move horizontally first, then vertically
+            while (cartX !== targetX || cartY !== targetY) {
+                if (cartX < targetX) {
+                    cartX++;
+                } else if (cartX > targetX) {
+                    cartX--;
+                } else if (cartY < targetY) {
+                    cartY++;
+                } else if (cartY > targetY) {
+                    cartY--;
+                }
+                
+                // Update status while moving
+                document.getElementById("status").innerText = `Bringing ${itemName}... (Moving to ${cartX},${cartY})`;
+                
+                // Move the cart visually
+                const currentCell = document.getElementById(`cell-${cartY}-${cartX}`);
+                cartElement.remove();
+                currentCell.appendChild(cartElement);
+                
+                // Wait a bit for animation
+                await new Promise(resolve => setTimeout(resolve, 200));
+            }
+        }
+
+        async function startSimulation() {
+            const orderedItems = localStorage.getItem("orderedItems");
+            if (!orderedItems) {
+                alert("No items ordered. Please add items to your cart first.");
+                return;
+            }
+
+            const itemsList = orderedItems.split(", ");
+            if (itemsList.length === 0) {
+                alert("No items to collect");
+                return;
+            }
+
+            document.getElementById("status").innerText = "Starting to collect items...";
+            
+            for (const item of itemsList) {
+                const [itemName, quantity] = item.split("*");
+                
+                if (!items[itemName]) {
+                    console.warn(`Item "${itemName}" not found in store`);
+                    continue;
+                }
+
+                const { x, y } = items[itemName];
+                
+                // Move to the item
+                await moveCartTo(x, y, itemName);
+                
+                // Change to picking image and wait (2 seconds per item)
+                cartElement.src = cartPickingImage;
+                document.getElementById("status").innerText = `Collecting ${itemName} (Quantity: ${quantity})...`;
+                await new Promise(resolve => setTimeout(resolve, quantity * 2000));
+                
+                // Change back to normal cart image
+                cartElement.src = cartImage;
+            }
+            
+            // Return to start position
+            await moveCartTo(0, 0, "starting position");
+            document.getElementById("status").innerText = "All items collected successfully! Thank you for shopping with us!";
+        }
+
+        window.onload = function() {
+            createGrid();
+            loadOrderedItems();
+        };
+    </script>
+</body>
+</html>

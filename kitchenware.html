@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kitchenware - PH💘 Mart</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        /* General Styles */
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #FFF5E1;
+            margin: 0;
+            padding: 0;
+            text-align: center;
+        }
+
+        .navbar {
+            background: #7D4C3F;
+            padding: 15px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 30px;
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.15);
+        }
+        .navbar a {
+            color: white;
+            text-decoration: none;
+            font-size: 18px;
+            font-weight: bold;
+            padding: 10px 20px;
+            transition: 0.3s;
+            border-radius: 5px;
+        }
+        .navbar a:hover {
+            background: #5C3A2D;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 40px auto;
+            padding: 25px;
+            background: #ffffff;
+            border-radius: 12px;
+            box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.15);
+        }
+
+        h1 {
+            color: #7D4C3F;
+            font-size: 28px;
+            margin-bottom: 20px;
+        }
+
+        /* Search Bar */
+        input[type="text"] {
+            width: 90%;
+            max-width: 500px;
+            padding: 10px;
+            font-size: 16px;
+            border: 2px solid #E07A5F;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            outline: none;
+            transition: 0.3s;
+        }
+
+        input[type="text"]:focus {
+            border-color: #3D405B;
+            box-shadow: 0px 0px 5px rgba(61, 64, 91, 0.5);
+        }
+
+        /* Product Grid */
+        #product-list {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            justify-content: center;
+            padding: 10px;
+        }
+
+        .product {
+            background: #D6E4F0;
+            border-radius: 10px;
+            padding: 10px;
+            text-align: center;
+            box-shadow: 0px 3px 10px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+            width: 100%;
+            max-width: 250px;
+            margin: auto;
+        }
+
+        .product:hover {
+            transform: scale(1.05);
+            box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.15);
+        }
+
+        .product img {
+            width: 100%;
+            height: 140px;
+            object-fit: cover;
+            border-radius: 8px;
+            margin-bottom: 10px;
+        }
+
+        .product p {
+            font-size: 16px;
+            color: #3D405B;
+            margin: 5px 0;
+            font-weight: bold;
+        }
+
+        /* Add to Cart Button */
+        .product button {
+            background-color: #FF6F61;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            font-size: 14px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: 0.3s;
+            font-weight: bold;
+        }
+
+        .product button:hover {
+            background-color: #D64541;
+            transform: scale(1.05);
+        }
+
+        /* Responsive Design */
+        @media (max-width: 900px) {
+            #product-list {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 600px) {
+            #product-list {
+                grid-template-columns: repeat(1, 1fr);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="navbar">
+        <a href="home.html">Home</a>
+        <a href="cart.html">Cart</a>
+    </div>
+
+    <div class="container">
+        <h1>Kitchenware</h1>
+        <input type="text" id="searchBox" placeholder="Search for products..." onkeyup="searchProducts()">
+        <div id="product-list"></div>
+    </div>
+
+    <script>
+        const products = [
+            { name: 'Non-Stick Pan', price: 500, image: 'nonstick_pan.jpeg' },
+            { name: 'Pressure Cooker', price: 1500, image: 'pressure_cooker.jpeg' },
+            { name: 'Knife Set', price: 700, image: 'knife_set.jpeg' },
+            { name: 'Cutting Board', price: 350, image: 'cutting_board.jpeg' },
+            { name: 'Mixing Bowls', price: 600, image: 'mixing_bowls.jpeg' },
+            { name: 'Measuring Cups', price: 250, image: 'measuring_cups.jpeg' },
+            { name: 'Spatula Set', price: 400, image: 'spatula_set.jpeg' },
+            { name: 'Toaster', price: 1800, image: 'toaster.jpeg' },
+            { name: 'Blender', price: 2500, image: 'blender.jpeg' },
+            { name: 'Dish Rack', price: 900, image: 'dish_rack.jpeg' }
+        ];
+    
+        function loadProducts(filteredProducts = products) {
+            const productList = document.getElementById('product-list');
+            productList.innerHTML = '';
+            filteredProducts.forEach(product => {
+                const productDiv = document.createElement('div');
+                productDiv.classList.add('product');
+                productDiv.innerHTML = `
+                    <img src="${product.image}" alt="${product.name}">
+                    <p>${product.name} - Rs. ${product.price}</p>
+                    <button onclick="addToCart('${product.name}', ${product.price}, '${product.image}')">Add to Cart</button>
+                `;
+                productList.appendChild(productDiv);
+            });
+        }
+    
+        function searchProducts() {
+            let input = document.getElementById('searchBox').value.toLowerCase();
+            let filteredProducts = products.filter(product => product.name.toLowerCase().includes(input));
+            document.getElementById('product-list').innerHTML = filteredProducts.length === 0 ? '<p>No products found</p>' : '';
+            loadProducts(filteredProducts);
+        }
+    
+        function addToCart(name, price, image) {
+            let cart = JSON.parse(localStorage.getItem('cart')) || [];
+            cart.push({ name, price, image });
+            localStorage.setItem('cart', JSON.stringify(cart));
+            alert(`${name} added to cart!`);
+        }
+    
+        window.onload = function () {
+            loadProducts();
+        };
+    </script>
+</body>
+</html>

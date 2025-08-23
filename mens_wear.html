@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Men's Wear - PH💘 Mart</title>
+    <style>
+        /* Dark blue background for premium feel */
+        /* Enhanced Dark Blue Premium Theme */
+body {
+    font-family: 'Poppins', sans-serif;
+    background: linear-gradient(135deg, #080d1a, #1b2e50);
+    margin: 0;
+    padding: 0;
+    text-align: center;
+    color: white;
+}
+
+/* Navigation Bar */
+.navbar {
+    background: #1c2d50;
+    padding: 15px 0;
+    text-align: center;
+    box-shadow: 0px 5px 15px rgba(0, 255, 255, 0.25);
+}
+
+.navbar a {
+    color: #00eaff;
+    text-decoration: none;
+    font-size: 18px;
+    font-weight: bold;
+    margin: 0 20px;
+    padding: 12px 18px;
+    border-radius: 8px;
+    transition: all 0.3s ease-in-out;
+}
+
+.navbar a:hover {
+    background: #0055cc;
+    color: white;
+    box-shadow: 0px 0px 12px rgba(0, 255, 255, 0.4);
+}
+
+/* Container */
+.container {
+    max-width: 1000px;
+    margin: 40px auto;
+    padding: 25px;
+    background: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.15);
+}
+
+h1 {
+    color: #00eaff;
+    font-size: 30px;
+    margin-bottom: 25px;
+    text-shadow: 0px 3px 5px rgba(0, 255, 255, 0.3);
+}
+
+/* Search Bar */
+#searchBar {
+    width: 85%;
+    padding: 12px;
+    font-size: 16px;
+    border: 2px solid #00eaff;
+    border-radius: 6px;
+    margin-bottom: 25px;
+    outline: none;
+    transition: all 0.3s ease-in-out;
+}
+
+#searchBar:focus {
+    border-color: #0099ff;
+    box-shadow: 0px 0px 10px rgba(0, 255, 255, 0.5);
+}
+
+/* Product Grid */
+.products {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 25px;
+}
+
+/* Product Card */
+.product-card {
+    width: 240px;
+    background: linear-gradient(135deg, #add8e6, #87ceeb);
+    padding: 18px;
+    border-radius: 12px;
+    box-shadow: 0px 6px 15px rgba(0, 255, 255, 0.2);
+    text-align: center;
+    transition: all 0.3s ease-in-out;
+    color: #002244;
+}
+
+.product-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0px 12px 25px rgba(0, 255, 255, 0.4);
+}
+
+/* Product Image */
+.product-card img {
+    width: 100%;
+    height: 220px;
+    object-fit: cover;
+    border-radius: 10px;
+    border: 3px solid #00eaff;
+}
+
+/* Product Name */
+.product-card p {
+    font-size: 18px;
+    font-weight: bold;
+    color: #002244;
+    margin-top: 12px;
+}
+
+/* Add to Cart Button */
+.add-to-cart {
+    background-color: #0055cc;
+    color: white;
+    border: none;
+    padding: 12px;
+    width: 100%;
+    cursor: pointer;
+    border-radius: 6px;
+    margin-top: 12px;
+    transition: all 0.3s ease-in-out;
+    font-size: 16px;
+    font-weight: bold;
+}
+
+.add-to-cart:hover {
+    background-color: #00318f;
+    box-shadow: 0px 0px 12px rgba(0, 255, 255, 0.5);
+}
+
+    </style>
+</head>
+<body>
+
+    <!-- Navigation Bar -->
+    <div class="navbar">
+        <a href="home.html">Home</a>
+        <a href="cart.html">Cart</a>
+        <a href="fashion.html">Fashion</a>
+    </div>
+
+    <div class="container">
+        <h1>Men's Wear</h1>
+        <input type="text" id="searchBar" placeholder="Search for products..." onkeyup="searchProducts()">
+        <div id="products" class="products"></div>
+    </div>
+
+    <script>
+        const products = [
+            { name: 'Mens T-Shirt', price: 20, image: 'men_tshirt.jpeg' },
+            { name: 'Mens Jacket', price: 50, image: 'men_jacket.jpeg' },
+            { name: 'Mens Jeans', price: 40, image: 'men_jeans.jpeg' },
+            { name: 'Mens Formal Shirt', price: 35, image: 'men_formal_shirt.jpeg' },
+            { name: 'Mens Hoodie', price: 55, image: 'men_hoodie.jpeg' },
+            { name: 'Mens Sneakers', price: 70, image: 'men_sneakers.jpeg' }
+        ];
+
+        function loadProducts() {
+            const productList = document.getElementById('products');
+            productList.innerHTML = '';
+            products.forEach(product => {
+                const productDiv = document.createElement('div');
+                productDiv.classList.add('product-card');
+                productDiv.innerHTML = `
+                    <img src="${product.image}" alt="${product.name}">
+                    <p>${product.name} - Rs. ${product.price}</p>
+                    <button class="add-to-cart" onclick="addToCart('${product.name}', ${product.price}, '${product.image}')">Add to Cart</button>
+                `;
+                productList.appendChild(productDiv);
+            });
+        }
+
+        function addToCart(name, price, image) {
+            let cart = JSON.parse(localStorage.getItem('cart')) || [];
+            cart.push({ name, price, image });
+            localStorage.setItem('cart', JSON.stringify(cart));
+            alert(`${name} added to cart!`);
+        }
+
+        function searchProducts() {
+            const searchQuery = document.getElementById('searchBar').value.toLowerCase();
+            const productList = document.getElementById('products');
+            productList.innerHTML = '';
+
+            products.filter(product => product.name.toLowerCase().includes(searchQuery))
+                .forEach(product => {
+                    const productDiv = document.createElement('div');
+                    productDiv.classList.add('product-card');
+                    productDiv.innerHTML = `
+                        <img src="${product.image}" alt="${product.name}">
+                        <p>${product.name} - Rs. ${product.price}</p>
+                        <button class="add-to-cart" onclick="addToCart('${product.name}', ${product.price}, '${product.image}')">Add to Cart</button>
+                    `;
+                    productList.appendChild(productDiv);
+                });
+        }
+
+        window.onload = loadProducts;
+    </script>
+
+</body>
+</html>

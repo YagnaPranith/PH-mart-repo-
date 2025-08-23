@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>PH💘 Mart - Payment</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <style>
+        /* CSS remains exactly the same as before */
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #121212;
+            color: white;
+            margin: 0;
+            padding: 0;
+            text-align: center;
+        }
+        .container {
+            max-width: 700px;
+            margin: 30px auto;
+            padding: 20px;
+            background: #1e1e1e;
+            border-radius: 10px;
+            box-shadow: 0px 4px 10px rgba(0, 255, 255, 0.2);
+        }
+        input, textarea {
+            width: 90%;
+            padding: 10px;
+            font-size: 14px;
+            border-radius: 5px;
+            border: 1px solid #00ffff;
+            background: #1e1e1e;
+            color: white;
+            margin-bottom: 15px;
+        }
+        input { height: 40px; }
+        textarea { height: 80px; resize: none; }
+        button {
+            background-color: #00ffff;
+            color: black;
+            border: none;
+            padding: 12px 20px;
+            cursor: pointer;
+            font-size: 16px;
+            border-radius: 5px;
+            transition: all 0.3s;
+        }
+        button:hover {
+            background-color: #00e6e6;
+        }
+        .hidden { display: none; }
+        #qr-section img {
+            width: 200px;
+            height: 200px;
+            border-radius: 10px;
+            margin: 10px auto;
+        }
+        table {
+            width: 90%;
+            margin: 20px auto;
+            border-collapse: collapse;
+        }
+        th, td {
+            border: 1px solid #00ffff;
+            padding: 10px;
+            text-align: center;
+        }
+        th { background-color: #00ffff; color: black; }
+    </style>
+</head>
+<body>
+    <!-- HTML structure remains exactly the same -->
+    <div class="container">
+        <h2>Welcome, <span id="username-display">Loading...</span>!</h2>
+
+        <div id="user-details">
+            <input type="text" id="mobile" placeholder="Enter Mobile Number" required><br>
+            <textarea id="address" placeholder="Enter Delivery Address" required></textarea><br>
+            <button onclick="showSummary()">Next</button>
+        </div>
+
+        <div id="summary-section" class="hidden">
+            <h3>Bill Summary</h3>
+            <div id="bill-summary"></div>
+            <button onclick="confirmDetails()">Confirm & Pay</button>
+        </div>
+
+        <div id="qr-section" class="hidden">
+            <h3>Scan QR to Pay</h3>
+            <img src="Qr-code.jpg" alt="QR Code">
+            <h3>Total Amount: <span id="total-amount"></span></h3>
+            <button onclick="donePayment()">Done</button>
+        </div>
+
+        <div id="download-section" class="hidden">
+            <button onclick="downloadPDF()">Download Invoice</button>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const storedUserName = localStorage.getItem("loggedInUser");
+            if (!storedUserName) {
+                alert("Login first");
+                window.location.href = "index.html";
+            } else {
+                document.getElementById("username-display").innerText = storedUserName;
+            }
+        });
+
+        let userName = localStorage.getItem("loggedInUser") || "Unknown";
+        let cart = JSON.parse(localStorage.getItem("cart")) || [];
+
+        function showSummary() {
+            const mobile = document.getElementById("mobile").value.trim();
+            const address = document.getElementById("address").value.trim();
+
+            if (!mobile || !address) {
+                alert("Please fill in all the details.");
+                return;
+            }
+
+            localStorage.setItem("userMobile", mobile);
+            localStorage.setItem("userAddress", address);
+
+            document.getElementById("user-details").classList.add("hidden");
+            document.getElementById("summary-section").classList.remove("hidden");
+
+            let billHTML = `<table>
+                                <tr><th>Item</th><th>Qty</th><th>Price (\u20B9)</th><th>Total (\u20B9)</th></tr>`;
+            let total = 0;
+
+            cart.forEach(item => {
+                let itemTotal = item.quantity * item.price;
+                total += itemTotal;
+                billHTML += `<tr>
+                                <td>${item.name}</td>
+                                <td>${item.quantity}</td>
+                                <td>\u20B9${item.price}</td>
+                                <td>\u20B9${itemTotal.toFixed(2)}</td>
+                             </tr>`;
+            });
+
+            billHTML += `<tr><th colspan="3">Total</th><th>\u20B9${total.toFixed(2)}</th></tr>`;
+            billHTML += `</table>`;
+
+            document.getElementById("bill-summary").innerHTML = billHTML;
+        }
+
+        function confirmDetails() {
+            document.getElementById("summary-section").classList.add("hidden");
+            document.getElementById("qr-section").classList.remove("hidden");
+
+            let total = 0;
+            cart.forEach(item => total += item.quantity * item.price);
+            document.getElementById("total-amount").innerText = `\u20B9${total.toFixed(2)}`;
+        }
+
+        function donePayment() {
+            document.getElementById("qr-section").classList.add("hidden");
+            document.getElementById("download-section").classList.remove("hidden");
+        }
+
+        async function downloadPDF() {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+
+            let mobile = localStorage.getItem("userMobile") || "-";
+            let address = localStorage.getItem("userAddress") || "-";
+            let total = 0;
+
+            doc.setFontSize(18);
+            doc.text("PH Mart - Invoice", 70, 10);
+            doc.setFontSize(12);
+            doc.text(`Customer: ${userName}`, 10, 20);
+            doc.text(`Mobile: ${mobile}`, 10, 28);
+            doc.text(`Address: ${address}`, 10, 36);
+
+            doc.text("--------------------------------------------------------", 10, 42);
+
+            let y = 50;
+            doc.setFontSize(12);
+            doc.text("Item", 10, y);
+            doc.text("Qty", 70, y);
+            doc.text("Price", 100, y);
+            doc.text("Total", 140, y);
+            y += 8;
+
+            // Store ordered items in a format that py.html can use
+            let orderedItems = [];
+            
+            cart.forEach(item => {
+                const itemTotal = item.quantity * item.price;
+                total += itemTotal;
+                doc.text(item.name, 10, y);
+                doc.text(item.quantity.toString(), 70, y);
+                doc.text("Rs." + item.price, 100, y);
+                doc.text("Rs." + itemTotal.toFixed(2), 140, y);
+                y += 8;
+                
+                // Store each item as "name*quantity"
+                orderedItems.push(`${item.name}*${item.quantity}`);
+            });
+
+            y += 4;
+            doc.text("--------------------------------------------------------", 10, y);
+            y += 8;
+            doc.setFontSize(14);
+            doc.text(`Total Amount: Rs.${total.toFixed(2)}`, 10, y);
+
+            doc.save("Invoice.pdf");
+
+            // Store the ordered items in localStorage for py.html
+            localStorage.setItem("orderedItems", orderedItems.join(", "));
+            localStorage.setItem("orderedItemsDisplay", cart.map(item => `${item.name} (Qty: ${item.quantity})`).join(", "));
+            setTimeout(() => window.location.href = "py.html", 1000);
+        }
+    </script>
+</body>
+</html>
